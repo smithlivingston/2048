@@ -24,7 +24,6 @@ function modifyASingleRow(index, isRtl) {
 
 function replaceRow(index, rowData) {
   var newRowToBeReplaced = "";
-
   //construct a set td's
   rowData.forEach(function (elem, index) {
     if(parseInt(elem) == 0)
@@ -37,7 +36,7 @@ function replaceRow(index, rowData) {
   document.getElementById("row" + index).innerHTML = newRowToBeReplaced;
 }
 
-function modifyASingleColumn(index) {
+function modifyASingleColumn(index, isRtl) {
   var columnToModify = index - 1;
   var currentColumn = [];
   //get current column as data set
@@ -48,7 +47,9 @@ function modifyASingleColumn(index) {
         .innerText
     );
   }
+  currentColumn = numerifyArray(currentColumn);
   console.log(currentColumn);
+  return performSwipe(currentColumn, isRtl);
 }
 
 function replaceColumn(index, columnData) {
@@ -56,11 +57,15 @@ function replaceColumn(index, columnData) {
   var columnToReplace = index - 1;
   //iterate
   for (i = 0; i < 5; i++) {
+
+    if(columnData[i] == 0)
+    {
+      columnData[i] = '';
+    }
     //pick current row cells and set inner html of current column with the new column
     document.getElementById("row" + (i + 1)).children[
       columnToReplace
-    ].innerHTML = "<td>" + columnData[i] + "</td>";
-    console.log("<td>" + columnData[i] + "</td>");
+    ].innerHTML = "<td>" + columnData[i].toString() + "</td>";
   }
 }
 
@@ -94,8 +99,8 @@ function performSwipe(currentArray, isRtl) {
         currentArray[i] = 0;
       }
     }
-  }
   currentArray = arrangeByZeroesLTR(currentArray);
+  }
   console.log(currentArray);
   return currentArray;
 }
@@ -122,7 +127,23 @@ function swipe(action) {
       replaceRow(rowStart, rowset); //replaces current row data set
     }
   } else if (action == "up") {
+    isRtl = true;
+    for (rowStart = 1; rowStart < 6; rowStart++) {
+    //calculate for each row and modify each row
+    var rowset = modifyASingleColumn(rowStart, isRtl); //gets current row data set swipe calculated
+    console.log(rowset);
+    debugger;
+    replaceColumn(rowStart, rowset); //replaces current row data set
+    }
   } else if (action == "down") {
+    isRtl = false;
+    for (rowStart = 1; rowStart < 6; rowStart++) {
+    //calculate for each row and modify each row
+    var rowset = modifyASingleColumn(rowStart, isRtl); //gets current row data set swipe calculated
+    console.log(rowset);
+    debugger;
+    replaceColumn(rowStart, rowset); //replaces current row data set
+    }
   }
 }
 
@@ -166,10 +187,25 @@ function arrangeByZeroesLTR(currentArray) {
           currentArray[j] = 0;
         }
       }
-
     }
   }
   return currentArray;
+}
+
+function numerifyArray(arraySet)
+{
+  for(i=0; i<arraySet.length; i++)
+  {
+    if(arraySet[i] != '')
+    {
+      arraySet[i] = parseInt(arraySet[i])
+    }
+    else {
+      arraySet[i] = 0;
+    }
+
+  }
+  return arraySet;
 }
 
 
